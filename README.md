@@ -44,14 +44,35 @@ A **PDK (Process Design Kit)** is the interface between the chip designer and th
 
 #### L2 - Open-Source EDA Tools
 
-The following open-source tools are compatible with the SKY130 PDK:
+The central repository that ties everything together is **open_pdks** — it is the open-source PDK installer that sets up the SKY130 PDK and configures all the EDA tools to work with it.
 
-- **Magic** — Layout editor, DRC engine, and parasitic extraction. Written by John Ousterhout at UC Berkeley, maintained by Tim Edwards.
-- **Netgen** — LVS (Layout vs. Schematic) comparator. Compares two SPICE netlists for structural equivalence.
-- **Xschem** — Schematic capture tool. Generates SPICE netlists for simulation and LVS.
-- **ngspice** — Open-source SPICE simulator for analog/mixed-signal verification.
-- **OpenLANE** — Automated RTL-to-GDSII flow integrating Yosys, OpenROAD, Magic, and Netgen.
-- **KLayout** — Alternative GDS viewer with DRC scripting and XOR comparison.
+- open_pdks: http://opencircuitdesign.com/open_pdks
+- GitHub: https://github.com/RTimothyEdwards/open_pdks
+
+**Installing SKY130 PDK via open_pdks:**
+```bash
+git clone https://github.com/RTimothyEdwards/open_pdks
+cd open_pdks
+configure --enable-sky130-pdk
+make
+sudo make install
+```
+
+**Tools currently supported by open_pdks:**
+
+- **Magic** (http://opencircuitdesign.com/magic) — Layout editor, DRC engine, parasitic extraction
+- **KLayout** (https://www.klayout.de) — Alternative layout viewer and DRC scripting
+- **OpenLANE** — Automated RTL-to-GDSII flow
+- **Xschem** — Schematic capture and netlist generation
+- **Netgen** — LVS (Layout vs. Schematic) comparator
+- **ngspice** — Open-source SPICE simulator
+
+**Alternative tools also supported:**
+
+- **iverilog** (https://iverilog.icarus.com) — Verilog simulator
+- **qflow** (http://opencircuitdesign.com/qflow) — Digital synthesis flow
+- **IRSIM** (http://opencircuitdesign.com/irsim) — Switch-level simulator
+- **xcircuit** (http://opencircuitdesign.com/xcircuit) — Schematic drawing tool (fun fact: the course slides were drawn with xcircuit!)
 
 ![Open-Source EDA Tools](images/Day1_SK1/opensource_eda_tools.png)
 
@@ -95,21 +116,65 @@ All devices are **parameterized cells (pcells)** — the designer sets W and L, 
 
 #### L5 - Understanding SkyWater PDK Libraries
 
-The PDK organizes libraries under `/usr/local/share/pdk/sky130A/`:
+**SkyWater SKY130 Libraries:**
 
-- **libs.tech/** — Technology files for each tool (Magic, Xschem, ngspice, Netgen, OpenLANE)
-- **libs.ref/** — Reference libraries:
-  - `sky130_fd_sc_hd` — High-density standard cells (most commonly used)
-  - `sky130_fd_sc_hs` — High-speed standard cells
-  - `sky130_fd_sc_ms` — Medium-speed standard cells
-  - `sky130_fd_sc_ls` — Low-speed standard cells
-  - `sky130_fd_sc_lp` — Low-power standard cells
-  - `sky130_fd_io` — I/O pad cells
-  - `sky130_fd_pr` — Primitive devices (transistors, R, C)
+1. **Digital standard cells:**
+   - `sky130_fd_sc_hd` — High-density (most commonly used)
+   - `sky130_fd_sc_hdll` — High-density, low-leakage
+   - `sky130_fd_sc_hs` — High-speed
+   - `sky130_fd_sc_ms` — Medium-speed
+   - `sky130_fd_sc_ls` — Low-speed
+   - `sky130_fd_sc_lp` — Low-power
+   - `sky130_fd_sc_hvl` — High-voltage
 
-**Naming convention:** `sky130` (process) + `fd` (foundry) + `sc` (standard cell) + `hd` (high-density)
+2. **Primitive devices / analog:** `sky130_fd_pr`
 
-Each cell has multiple views: **GDS** (physical layout), **LEF** (abstract for P&R), **LIB** (timing models), **SPICE** (transistor-level netlist).
+3. **I/O cells:** `sky130_fd_io`
+
+4. **3rd-party libraries:** `sky130_ml_xx_hd`, `sky130_sram_macros`
+
+**PDK Installed Filesystem Structure:**
+
+```
+/usr/share/pdk/
+└── sky130A/
+    ├── libs.tech/          ← Technology files for each tool
+    │   ├── magic/
+    │   ├── openlane/
+    │   └── xschem/
+    └── libs.ref/           ← Reference libraries
+        ├── sky130_fd_sc_hd/
+        ├── sky130_fd_pr/
+        └── sky130_fd_io/
+```
+
+**Recommended Project Filesystem Structure:**
+
+```
+project_root/                  (e.g., "my_sky130_project")
+├── xschem/                    ← Schematics (copy xschemrc here)
+├── mag/                       ← Layouts (copy .magicrc here)
+├── spice/                     ← SPICE netlists
+├── openlane/                  ← OpenLANE config
+└── verilog/                   ← RTL files
+```
+
+Config files are copied from the PDK into the project directory:
+- `sky130A/libs.tech/magic/sky130A.magicrc` → `mag/.magicrc`
+- `sky130A/libs.tech/xschem/xschemrc` → `xschem/xschemrc`
+
+**For projects with multiple subcells**, two organization styles are possible:
+
+```
+# Style 1: Subcells inside tool dirs     # Style 2: Tool dirs inside subcells
+project_root/                             project_root/
+├── mag/                                  ├── subcell_A/
+│   ├── subcell_A/                        │   ├── mag/
+│   └── subcell_B/                        │   └── xschem/
+└── xschem/                               └── subcell_B/
+    ├── subcell_A/                            ├── mag/
+    └── subcell_B/                            └── xschem/
+```
 
 ![SKY130 Libraries](images/Day1_SK1/sky130_libraries.png)
 
