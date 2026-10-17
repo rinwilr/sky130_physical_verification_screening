@@ -139,10 +139,12 @@ The SKY130 process uses a specific set of physical layers, each identified by a 
 
 - **diff** — Active diffusion area where transistors are formed. N-type (ndiff) and P-type (pdiff) are distinguished by implant masks.
 - **poly** — Polysilicon gate layer. Where it crosses diffusion, a transistor channel is formed.
-- **li1 (local interconnect)** — A thin, high-resistance routing layer sitting between the transistors and metal1. Used for short, local connections. It is *not* a true metal layer and should be avoided for long routing due to high sheet resistance.
-- **met1 through met5** — The five copper metal routing layers. met1 is the thinnest; met5 is the thickest and used for power distribution.
+- **li1 (local interconnect)** — A thin routing layer **made of TiN (Titanium Nitride)** sitting between the transistors and metal1. It has high sheet resistance and is meant only for very short, device-level connections. It is *not* a true metal layer and should be avoided for long routing.
+- **met1 through met5** — The five copper metal routing layers. met1 is the thinnest; met5 is the thickest and used for power distribution and the **RDL (Redistribution Layer)** which is handled separately.
 - **mcon** — Contact connecting li1 to met1.
 - **via1 to via4** — Vias connecting adjacent metal layers.
+- **nwell / dnwell** — N-well is used for PMOS transistors. **Deep N-well (dnwell)** provides noise isolation between sensitive analog circuits and the noisy digital substrate.
+- **NPC (Nitride Poly Cut)** — An automatically generated layer. Magic creates it from poly and contact positions — the designer does not draw it manually.
 
 Each layer has specific design rules governing minimum width, minimum spacing, minimum enclosure (how much a via must overlap the metal around it), and minimum area.
 
