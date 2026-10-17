@@ -34,7 +34,17 @@ This repository covers the fundamentals of physical verification — DRC (Design
 
 #### L1 - Introduction to SkyWater PDK
 
-The **SkyWater SKY130** is the first foundry-provided, fully open-source Process Design Kit (PDK), released through a collaboration between **Google** and **SkyWater Technology**. It targets a mature **130nm** CMOS process, making real silicon fabrication accessible to hobbyists, researchers, and small startups for the first time.
+The **SkyWater SKY130** is the first foundry-provided, fully open-source Process Design Kit (PDK), released through a collaboration between **Google** and **SkyWater Technology**. The "130" in SKY130 refers to the **130nm feature size** — this is the minimum transistor length the process was originally designed for. However, there is an important caveat: **for obscure process reasons, the actual minimum-length device in SKY130 is 150nm, not 130nm.**
+
+The PDK is a public repository, making real silicon fabrication accessible to hobbyists, researchers, and small startups for the first time.
+
+**Key Resources:**
+
+| Resource | Link |
+|----------|------|
+| PDK Documentation | https://skywater-pdk--136.org.readthedocs.build |
+| PDK Library & Files | https://github.com/google/skywater-pdk |
+| Community (Slack) | https://join.skywater.tools |
 
 **What is a PDK?**
 
