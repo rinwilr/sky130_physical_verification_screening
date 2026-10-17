@@ -5,8 +5,20 @@ Documentation of my work from the **Physical Verification** course using the Sky
 ## Table of Contents
 
 - [Day 1 - Introduction to SkyWater SKY130](#day-1---introduction-to-skywater-sky130)
-  - [Theory](#theory)
-  - [Labs](#labs)
+  - [SK1 - Introduction to SkyWater PDKs and Open-Source EDA Tools](#sk1---introduction-to-skywater-pdks-and-open-source-eda-tools)
+    - [L1 - Introduction to SkyWater PDK](#l1---introduction-to-skywater-pdk)
+    - [L2 - Open-Source EDA Tools](#l2---open-source-eda-tools)
+    - [L3 - Understanding SkyWater PDK - Layers](#l3---understanding-skywater-pdk---layers)
+    - [L4 - Understanding SkyWater PDK - Devices](#l4---understanding-skywater-pdk---devices)
+    - [L5 - Understanding SkyWater PDK Libraries](#l5---understanding-skywater-pdk-libraries)
+    - [L6 - Open-Source Tools and Flows](#l6---open-source-tools-and-flows)
+  - [SK2 - Tool Installation and Basic DRC/LVS Design Flow](#sk2---tool-installation-and-basic-drclvs-design-flow)
+    - [L1 - Check Tool Installations](#l1---check-tool-installations)
+    - [L2 - Creating SKY130 Device Layout in Magic](#l2---creating-sky130-device-layout-in-magic)
+    - [L3 - Creating Simple Schematic in Xschem](#l3---creating-simple-schematic-in-xschem)
+    - [L4 - Creating Symbol and Exporting Schematic in Xschem](#l4---creating-symbol-and-exporting-schematic-in-xschem)
+    - [L5 - Importing Schematic to Layout and Inverter Layout Steps](#l5---importing-schematic-to-layout-and-inverter-layout-steps)
+    - [L6 - Final DRC/LVS Checks](#l6---final-drclvs-checks)
 - [References](#references)
 - [Acknowledgements](#acknowledgements)
 
@@ -14,9 +26,9 @@ Documentation of my work from the **Physical Verification** course using the Sky
 
 ## Day 1 - Introduction to SkyWater SKY130
 
-### Theory
+### SK1 - Introduction to SkyWater PDKs and Open-Source EDA Tools
 
-#### Introduction to SkyWater PDK
+#### L1 - Introduction to SkyWater PDK
 
 The **SkyWater SKY130** is the first fully open-source PDK, a collaboration between **Google** and **SkyWater Technology Foundry**. The "130" refers to the 130nm feature size (minimum transistor length). However, **the actual minimum-length device in SKY130 is 150nm, not 130nm** — this is due to obscure process reasons.
 
@@ -30,7 +42,7 @@ A **PDK (Process Design Kit)** is the interface between the chip designer and th
 
 ![SkyWater PDK](images/Day1_SK1/skywater_pdk_overview.png)
 
-#### Open-Source EDA Tools
+#### L2 - Open-Source EDA Tools
 
 The following open-source tools are compatible with the SKY130 PDK:
 
@@ -43,7 +55,7 @@ The following open-source tools are compatible with the SKY130 PDK:
 
 ![Open-Source EDA Tools](images/Day1_SK1/opensource_eda_tools.png)
 
-#### Understanding SKY130 Layers
+#### L3 - Understanding SkyWater PDK - Layers
 
 The SKY130 process has the following layer stack:
 
@@ -60,7 +72,7 @@ The SKY130 process has the following layer stack:
 
 ![SKY130 Layer Stack](images/Day1_SK1/sky130_layers.png)
 
-#### Understanding SKY130 Devices
+#### L4 - Understanding SkyWater PDK - Devices
 
 **MOSFETs:**
 
@@ -81,7 +93,7 @@ All devices are **parameterized cells (pcells)** — the designer sets W and L, 
 
 ![SKY130 Devices](images/Day1_SK1/sky130_devices.png)
 
-#### Understanding SKY130 Libraries
+#### L5 - Understanding SkyWater PDK Libraries
 
 The PDK organizes libraries under `/usr/local/share/pdk/sky130A/`:
 
@@ -101,7 +113,7 @@ Each cell has multiple views: **GDS** (physical layout), **LEF** (abstract for P
 
 ![SKY130 Libraries](images/Day1_SK1/sky130_libraries.png)
 
-#### Open-Source Tools and Flows
+#### L6 - Open-Source Tools and Flows
 
 Physical verification is part of the **signoff stage** in the RTL-to-GDSII flow:
 
@@ -120,9 +132,9 @@ Physical verification is part of the **signoff stage** in the RTL-to-GDSII flow:
 
 ---
 
-### Labs
+### SK2 - Tool Installation and Basic DRC/LVS Design Flow
 
-#### Tool Installation and Verification
+#### L1 - Check Tool Installations
 
 The tools are installed in the following order. **open_pdks must be installed last** as it configures technology files based on tool install locations.
 
@@ -202,7 +214,24 @@ Verifying each tool launches correctly:
 
 ---
 
-#### Creating Inverter Schematic in Xschem
+#### L2 - Creating SKY130 Device Layout in Magic
+
+Launched Magic from `mag/` directory with `magic -d XR` and explored the SKY130 standard cell layout by loading an existing inverter cell from the PDK:
+
+```tcl
+% gds read /usr/local/share/pdk/sky130A/libs.ref/sky130_fd_sc_hd/gds/sky130_fd_sc_hd.gds
+% load sky130_fd_sc_hd__inv_1
+```
+
+We can observe the PMOS (inside N-well) and NMOS transistors, power rails (VPWR, VGND) on met1, and local interconnect (li1) used for internal routing.
+
+![Standard Cell in Magic](images/Day1_SK2/magic_std_cell_layout.png)
+
+![Device Layout in Magic](images/Day1_SK2/magic_device_layout.png)
+
+---
+
+#### L3 - Creating Simple Schematic in Xschem
 
 Launched Xschem from the `xschem/` directory and built a CMOS inverter schematic:
 
@@ -216,7 +245,7 @@ Launched Xschem from the `xschem/` directory and built a CMOS inverter schematic
 
 ---
 
-#### Creating Symbol and Testbench
+#### L4 - Creating Symbol and Exporting Schematic in Xschem
 
 Created an inverter symbol from the schematic using **Symbol → Make symbol from schematic**.
 
@@ -237,7 +266,7 @@ Built a testbench `inverter_tb.sch`:
 
 ---
 
-#### Pre-Layout Simulation (ngspice)
+**Pre-Layout Simulation (ngspice):**
 
 Ran the transient simulation from the testbench. The inverter behaves as expected — output Y is the complement of input A.
 
@@ -245,7 +274,7 @@ Ran the transient simulation from the testbench. The inverter behaves as expecte
 
 ---
 
-#### Inverter Layout in Magic
+#### L5 - Importing Schematic to Layout and Inverter Layout Steps
 
 Launched Magic from `mag/` directory with `magic -d XR` and built the inverter layout:
 
@@ -261,7 +290,9 @@ Launched Magic from `mag/` directory with `magic -d XR` and built the inverter l
 
 ---
 
-#### DRC Check
+#### L6 - Final DRC/LVS Checks
+
+**DRC Check:**
 
 Ran DRC in Magic:
 
@@ -274,11 +305,9 @@ All DRC violations were resolved. Layout is DRC clean.
 
 ![DRC Clean](images/Day1_SK2/magic_drc_clean.png)
 
----
+**Layout Netlist Extraction:**
 
-#### Layout Netlist Extraction
-
-Extracted the SPICE netlist from the layout for LVS comparison:
+Extracted the SPICE netlist from the layout for LVS:
 
 ```tcl
 % extract do local
@@ -289,11 +318,9 @@ Extracted the SPICE netlist from the layout for LVS comparison:
 
 ![Extraction Output](images/Day1_SK2/magic_extraction.png)
 
----
+**LVS with Netgen:**
 
-#### LVS Check (Netgen)
-
-Compared the schematic netlist (from Xschem) with the layout netlist (from Magic) using Netgen:
+Compared the schematic netlist (from Xschem) with the layout netlist (from Magic):
 
 ```bash
 netgen -batch lvs "../mag/inverter.spice inverter" "../xschem/inverter.spice inverter"
@@ -303,11 +330,9 @@ Result: **Circuits match uniquely.**
 
 ![LVS Result - Match](images/Day1_SK2/netgen_lvs_match.png)
 
----
+**Post-Layout Simulation:**
 
-#### Post-Layout Simulation
-
-After confirming LVS clean, ran a post-layout simulation using the extracted netlist to verify that the layout parasitics do not degrade circuit performance significantly.
+After confirming LVS clean, ran a post-layout simulation using the extracted netlist to verify that layout parasitics do not degrade circuit performance.
 
 ![Post-Layout Simulation](images/Day1_SK2/postlayout_simulation.png)
 
