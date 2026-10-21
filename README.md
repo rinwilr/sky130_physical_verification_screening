@@ -83,20 +83,20 @@ sudo make install
 
 **SkyWater SKY130 Libraries:**
 **1. Digital standard cells**
-sky130_fd_sc_hd
-sky130_fd_sc_hs
-sky130_fd_sc_lp
-sky130_fd_sc_hdll
-sky130_fd_sc_ms
-sky130_fd_sc_hvl
-sky130_fd_sc_ls
+* sky130_fd_sc_hd
+* sky130_fd_sc_hs
+* sky130_fd_sc_lp
+* sky130_fd_sc_hdll
+* sky130_fd_sc_ms
+* sky130_fd_sc_hvl
+* sky130_fd_sc_ls
 **2. Primitive devices/analog**
-sky130_fd_pr
+* sky130_fd_pr
 **3. I/O cells**
-sky130_fd_io
+* sky130_fd_io
 **4. 3rd-party libraries**
-sky130_ml_xx_hd
-sky130_sram_macros
+* sky130_ml_xx_hd
+* sky130_sram_macros
 
 
 #### L3 - Understanding SkyWater PDK - Layers
