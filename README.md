@@ -100,13 +100,7 @@ sudo make install
 * sky130_ml_xx_hd
 * sky130_sram_macros
 
-# SkyWater SKY130 Open-Source EDA Tools Project Setup Guide
-
-This repository documents the setup, filesystem architecture, and directory structure used when designing integrated circuits with open-source Electronic Design Automation (EDA) tools and the **SkyWater SKY130nm PDK**.
-
----
-
-## 1. Centralized PDK Filesystem Structure
+**1. Centralized PDK Filesystem Structure**
 
 The standard reference installation for Open PDKs places the PDK libraries and technology files in a centralized system directory (`/usr/share/pdk/`). Below is the standard directory structure:
 
@@ -130,14 +124,14 @@ The standard reference installation for Open PDKs places the PDK libraries and t
         └── sky130_fd_pr/
 ```
 
-### SkyWater SKY130 Reference Libraries (`libs.ref`)
+**SkyWater SKY130 Reference Libraries (`libs.ref`)**
 * **`sky130_fd_sc_hd`**: High-Density (HD) Digital standard cells.
 * **`sky130_fd_io`**: Input/Output (I/O) cell libraries for pad frames.
 * **`sky130_fd_pr`**: Primitive devices (Transistors, Resistors, Capacitors) for analog simulation.
 
 ---
 
-## 2. Tool Configuration & Workspace Initialization
+**2. Tool Configuration & Workspace Initialization**
 
 To use EDA tools like **Magic VLSI** and **Xschem** locally inside your project workspace, you must initialize your local folders with configuration files mapped from the centralized PDK installation.
 
@@ -148,23 +142,11 @@ To use EDA tools like **Magic VLSI** and **Xschem** locally inside your project 
 └── xschem/
     └── xschemrc         ──────────>  [Copies/Links to] ──>  project_root/xschem/xschemrc
 ```
-
-### Configuration Mappings
-
-| Source Tool Configuration (PDK Path) | Destination Project Path | Tool Configuration Purpose |
-| :--- | :--- | :--- |
-| `/usr/share/pdk/sky130A/libs.tech/magic/sky130A.magicrc` | `project_root/mag/.magicrc` | Configures Magic layout settings, device extractions, technology files, and layer color styles locally. |
-| `/usr/share/pdk/sky130A/libs.tech/xschem/xschemrc` | `project_root/xschem/xschemrc` | Configures Xschem schematic editor symbol library paths and SPICE simulation targets. |
-
-> 📌 **Pro Tip:** Always run your tools (`magic` or `xschem`) from inside their respective project directories (`mag/` or `xschem/`) so they properly source these localized configuration parameters.
-
----
-
-## 3. Organizing Project Subcells
+**3. Organizing Project Subcells**
 
 When creating hierarchical chip designs containing multiple custom subcells or macro blocks, you can choose between two main repository layout strategies.
 
-### Option 1: Top-Level Tool Architecture (Recommended for Flat Verification)
+**Option 1: Top-Level Tool Architecture (Recommended for Flat Verification)**
 This method separates files cleanly based on the specific tool interface. Layout files stay together, and schematic files stay together.
 
 ```text
@@ -176,10 +158,7 @@ project_root/
     ├── subcell_name_1/
     └── subcell_name_2/
 ```
-
-* **Best For:** Script-heavy integrations and running batch DRC (Design Rule Checking) / LVS (Layout vs. Schematic) flows across an entire project.
-
-### Option 2: Component-Centric Architecture (Recommended for Modular IPs)
+**Option 2: Component-Centric Architecture (Recommended for Modular IPs)**
 This method groups all design file types belonging to a specific sub-block into a single unified directory.
 
 ```text
@@ -188,9 +167,6 @@ project_root/
     ├── mag/
     └── xschem/
 ```
-
-* **Best For:** Creating highly independent IP blocks that you plan to reuse or share across completely different top-level chip projects.
-
 #### L3 - Understanding SkyWater PDK - Layers
 
 The SKY130 process uses a stack of physical layers from the transistor level up to the top metal:
