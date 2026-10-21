@@ -40,7 +40,8 @@ A **PDK (Process Design Kit)** is the interface between the chip designer and th
 | PDK Library & Files | https://github.com/google/skywater-pdk |
 | Community (Slack) | https://join.skywater.tools |
 
-![SkyWater PDK](images/Day1_SK1/skywater_pdk_overview.png)
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/f5693ae1-85bc-41a5-9c67-a383b078ca1f" />
+
 
 #### L2 - Open-Source EDA Tools
 
@@ -74,7 +75,7 @@ sudo make install
 - **IRSIM** (http://opencircuitdesign.com/irsim) — Switch-level simulator
 - **xcircuit** (http://opencircuitdesign.com/xcircuit) — Schematic drawing tool (fun fact: the course slides were drawn with xcircuit!)
 
-![Open-Source EDA Tools](images/Day1_SK1/opensource_eda_tools.png)
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/a03f685f-9eba-4ae5-aa4a-3f4e24a486d8" />
 
 #### L3 - Understanding SkyWater PDK - Layers
 
@@ -92,6 +93,7 @@ The SKY130 process has the following layer stack:
 - **RDL (Redistribution Layer)** — Handled separately on the top metal
 
 ![SKY130 Layer Stack](images/Day1_SK1/sky130_layers.png)
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/84ea4264-8a85-463e-93a9-c926f4f8c643" />
 
 #### L4 - Understanding SkyWater PDK - Devices
 
@@ -113,6 +115,13 @@ The SKY130 process has the following layer stack:
 All devices are **parameterized cells (pcells)** — the designer sets W and L, and the layout is generated automatically. SPICE models are BSIM4 with corner models (tt, ff, ss, sf, fs).
 
 ![SKY130 Devices](images/Day1_SK1/sky130_devices.png)
+<img width="681" height="502" alt="image" src="https://github.com/user-attachments/assets/a92c60af-7c0c-47eb-b2f2-219a7bbc4eae" />
+<img width="642" height="537" alt="image" src="https://github.com/user-attachments/assets/76414375-c560-4b27-b31c-6b877c88bbb1" />
+<img width="691" height="397" alt="image" src="https://github.com/user-attachments/assets/5ddc06e1-bc4c-47df-a98b-1f88c3ea0177" />
+<img width="688" height="532" alt="image" src="https://github.com/user-attachments/assets/a30ec908-1d6c-43dd-8e70-20327e093aaf" />
+<img width="720" height="480" alt="image" src="https://github.com/user-attachments/assets/8fafc59b-fcd2-4939-822d-cf5909a490a6" />
+<img width="565" height="507" alt="image" src="https://github.com/user-attachments/assets/50c0e399-a785-4763-b762-f3bf3b9dda49" />
+<img width="673" height="493" alt="image" src="https://github.com/user-attachments/assets/efa84707-5716-4dc2-84e1-4dc895d5e173" />
 
 #### L5 - Understanding SkyWater PDK Libraries
 
@@ -126,12 +135,17 @@ All devices are **parameterized cells (pcells)** — the designer sets W and L, 
    - `sky130_fd_sc_ls` — Low-speed
    - `sky130_fd_sc_lp` — Low-power
    - `sky130_fd_sc_hvl` — High-voltage
+   - <img width="682" height="510" alt="image" src="https://github.com/user-attachments/assets/3889b039-b51e-4d41-b0a2-3d08c7df90a0" />
+   - <img width="707" height="562" alt="image" src="https://github.com/user-attachments/assets/312b7b91-cecb-4316-9f0a-2b2c81782347" />
 
 2. **Primitive devices / analog:** `sky130_fd_pr`
+<img width="1188" height="575" alt="image" src="https://github.com/user-attachments/assets/3d5e7eba-1dc8-42f4-a989-d421fcd4c92d" />
 
 3. **I/O cells:** `sky130_fd_io`
+<img width="1201" height="582" alt="image" src="https://github.com/user-attachments/assets/3d82080b-5ef1-44ed-8f17-9f4dfd5c4353" />
 
 4. **3rd-party libraries:** `sky130_ml_xx_hd`, `sky130_sram_macros`
+<img width="1197" height="571" alt="image" src="https://github.com/user-attachments/assets/01691ddb-1d0f-4ad8-b9f0-db914e8f5978" />
 
 **PDK Installed Filesystem Structure:**
 
