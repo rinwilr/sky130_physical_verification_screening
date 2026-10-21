@@ -203,18 +203,7 @@ Understanding the devices is critical for physical verification, since most of P
 
 **MOSFETs:**
 
-The SKY130 process offers both thin-oxide (1.8V) and thick-oxide (5V) MOSFETs:
-
-| Device | Type | Description |
-|--------|------|-------------|
-| `sky130_fd_pr__nfet_01v8` | NMOS 1.8V | Standard threshold, general purpose |
-| `sky130_fd_pr__pfet_01v8` | PMOS 1.8V | Standard threshold, general purpose |
-| `sky130_fd_pr__nfet_01v8_lvt` | NMOS LVT | Low threshold, higher speed, more leakage |
-| `sky130_fd_pr__pfet_01v8_hvt` | PMOS HVT | High threshold, lower leakage, slower |
-| `sky130_fd_pr__nfet_g5v0d10v5` | NMOS 5V | Thick gate oxide, for I/O |
-| `sky130_fd_pr__pfet_g5v0d10v5` | PMOS 5V | Thick gate oxide, for I/O |
-
-Like most larger feature-size processes that are well-suited for analog and mixed-signal design, the SKY130 process has numerous device offerings beyond MOSFETs.
+The SKY130 process offers both thin-oxide (1.8V) and thick-oxide (5V) MOSFETs.Like most larger feature-size processes that are well-suited for analog and mixed-signal design, the SKY130 process has numerous device offerings beyond MOSFETs.
 
 **Bipolar Devices:**
 
@@ -227,10 +216,10 @@ The best bipolar devices with high enough gain to be useful are **vertical bipol
 
 The best resistors are made with **doped polysilicon**. There are two types in SKY130:
 
-| Resistor | Sheet Resistance | Notes |
-|----------|-----------------|-------|
-| P+ doped poly | ~1 kΩ/sq | Standard poly resistor |
-| P- doped poly (high-res) | ~2 kΩ/sq | High-resistance poly resistor |
+| Resistor | Sheet Resistance | 
+|----------|-----------------|
+| P+ doped poly | ~1 kΩ/sq |
+| P- doped poly (high-res) | ~2 kΩ/sq |
 
 **Diffusion resistors** are also available but since they have a PN junction underneath, the circuit design must keep that junction firmly reverse-biased. The highest resistance per square comes from P-well resistors, but due to the large size and spacing required for P-well, they are rarely used when the high-resistance poly option is available.
 
@@ -244,7 +233,7 @@ MiM (Metal-insulator-Metal) capacitors are available. Many of the capacitor and 
 
 - All standard devices are **parameterized cells (pcells)** — the designer specifies W and L and the layout is generated automatically
 - Some devices have a **discrete set of approved sizes** rather than continuous parameterization
-- SPICE models use BSIM4 with corner models (tt, ff, ss, sf, fs) for process variation analysis
+
 
 ![SKY130 Devices](images/Day1_SK1/sky130_devices.png)
 <img width="681" height="502" alt="image" src="https://github.com/user-attachments/assets/a92c60af-7c0c-47eb-b2f2-219a7bbc4eae" />
