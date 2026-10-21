@@ -83,18 +83,30 @@ sudo make install
 
 #### L3 - Understanding SkyWater PDK - Layers
 
-The SKY130 process uses a stack of physical layers from the transistor level up to the top metal:
+The SkyWater SKY130 process is described as a **hybrid 130nm-180nm standard CMOS fabrication process**. Most FET transistors have a minimum length of 150nm, while specially designed ones can go down to 130nm.
 
-- **diff** — Active diffusion region where transistors are formed
-- **poly** — Polysilicon gate. A transistor channel forms wherever poly crosses diffusion
-- **li1 (Local Interconnect)** — A thin routing layer made of **TiN (Titanium Nitride)**. High sheet resistance — suitable only for very short device-level connections, not for long-distance routing
-- **met1 through met5** — Five metal layers for routing. met1 is the thinnest; met5 is the thickest and primarily used for power distribution
-- **licon** — Contact connecting diffusion/poly to li1
-- **mcon** — Contact connecting li1 to met1
-- **via1 to via4** — Vias connecting adjacent metal layers
-- **nwell / dnwell** — N-well houses PMOS devices. **Deep N-well (dnwell)** isolates sensitive analog circuits from digital substrate noise
-- **NPC (Nitride Poly Cut)** — An automatically generated layer; Magic derives it from poly and contact positions. The designer does not draw it manually
-- **RDL (Redistribution Layer)** — Handled separately, sits on the topmost metal
+The process has **5 layers of aluminium metal** plus a layer of **titanium nitride (TiN)** which acts like a metal layer but has relatively high resistance — making it unsuitable for long routes. This layer, called **local interconnect (li1)**, is probably the most unintuitive layer in the whole process for anyone used to processes where the first routing layer above polysilicon is aluminium.
+
+**The general rule for local interconnect:** use it only to connect neighboring devices, and otherwise contact up immediately to metal1. If you look at the SkyWater standard cells, local interconnect is used for power and ground rails — but because it should never be used for routing, the entire length of both li1 rails is strapped with metal1 above.
+
+**Contacts to polysilicon** are also a bit unusual in this process — they require a **nitride poly cut (NPC)** layer around the contacts. Usually this is not an issue, but it is possible to place contacts in a way that does not satisfy design rules.
+
+The metal layers have **progressive thicknesses** — local interconnect is the thinnest, metal5 is the thickest. This is a bare minimum of metal layers for this feature size. When running digital flows, the tools should reserve metal5 for power routing, and local interconnect is unusable for signal routing — which leaves only 4 real routing layers.
+
+**Frontend vs. Backend layers:**
+
+The metal layers are the **backend layers**. Everything below them is the **frontend**. They differ in their fabrication steps:
+- **Frontend** — mainly diffusion and ion implantation processes. Includes oxide growth (insulation layers)
+- **Backend** — metal deposition, usually by sputtering
+
+**Frontend layers include:**
+- **diff and tap** — Diffusion forms the active areas of transistors. Tap provides substrate/well contacts for body connections
+- **Deep N-well (dnwell)** — Creates a barrier that isolates circuits from substrate noise
+- **HVI (High Voltage Implant)** — Has more than one use; it forms the thick gate oxide needed for high-voltage (5V) devices
+- **MiM cap layers** — Metal-insulator-Metal capacitor layers for analog circuits
+
+**Other special layers:**
+- **RDL (Redistribution Layer)** — Fabricated by a 3rd party. Used for wafer-level packaging (no wire bonding needed)
 
 ![SKY130 Layer Stack](images/Day1_SK1/sky130_layers.png)
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/84ea4264-8a85-463e-93a9-c926f4f8c643" />
