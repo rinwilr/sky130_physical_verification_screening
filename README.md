@@ -333,18 +333,38 @@ The primitive device library is named `sky130_fd_pr` (`pr` = primitives). It con
 
 #### L6 - Open-Source Tools and Flows
 
-The complete open-source RTL-to-GDSII flow passes through these stages:
+The file formats in the SkyWater PDK are specifically chosen because they are non-proprietary and usable with open-source tools.
 
-1. **Synthesis** (Yosys/ABC) → Gate-level netlist
-2. **Floorplan + Placement** (OpenROAD) → Physical placement of cells
-3. **CTS** (TritonCTS) → Clock tree synthesis
-4. **Routing** (FastRoute + TritonRoute) → Metal connections
-5. **Signoff** → **DRC** (Magic) + **LVS** (Netgen)
-6. **Tapeout** → Final GDSII file sent to the foundry
+**The Manual Analog Design Flow:**
 
-**DRC** checks that every shape in the layout satisfies the foundry's manufacturing rules. **LVS** confirms the layout implements exactly the circuit described in the schematic. No foundry accepts a design without both passing clean.
+For a simple analog circuit (a handful of transistors, resistors, capacitors — possibly some digital cells), the complete flow from schematic to verified layout is:
 
-**OpenLANE** automates this entire pipeline end to end. For custom analog design, each tool is used individually — which is the focus of this course.
+1. **Create the schematic** using **Xschem** — Xschem has symbol libraries for the SkyWater process (provided by developer Stefan Schippers). It is well integrated with **ngspice** (simulator) and **Gaw** (waveform viewer)
+2. **Generate the SPICE netlist** — this netlist serves two purposes: simulation and providing device information for the layout
+3. **Import the netlist into Magic** — Magic uses Tcl/Tk interpreter scripts from the PDK to draw device layouts. Each device requires seven routines to describe it, and each is heavily parameterized
+4. **Arrange the devices** — without a sophisticated analog placement tool, importing gives you a grouping of devices that you must organize manually
+5. **Run DRC** — verify that the layout satisfies all manufacturing rules (spacing, width, enclosure). A design failing DRC may be rejected by the foundry
+6. **Wire the devices together** — route connections between devices
+7. **Extract the layout netlist** — the layout tool examines actual mask layers and independently determines how they form devices, without being told what devices are present. There should be no cheating — the extraction must rely only on mask-layer geometry
+8. **Run LVS** — compare the two independently derived netlists (schematic vs. layout-extracted). If they match, verification passes. If not, analyze, correct, and repeat
+
+**Device parameters from schematic vs. layout:**
+
+Some parameters carry over from the schematic (transistor W, L, number of fingers). Other parameters are layout-specific and must be set manually:
+- Where contacts should be placed
+- Whether a guard ring should be added
+- Whether ends should connect to a contact layer
+
+This means automation can take you part of the way from schematic to layout, but the rest requires manual effort — which is why this course focuses on the manual flow.
+
+**Why both DRC and LVS matter:**
+
+- Skipping **DRC** → the foundry may reject the design outright
+- Skipping **LVS** → the foundry won't catch it, but you lose confidence that the fabricated circuit will actually function as designed
+
+**The netlist as common ground for LVS:**
+
+The schematic and layout exist in very different representations. The common format that allows comparison is the **SPICE netlist** — open-source tools all work with SPICE-compatible netlists, making it possible to compare the two sides directly.
 
 ![RTL to GDSII Flow](images/Day1_SK1/rtl_to_gdsii_flow.png)
 
