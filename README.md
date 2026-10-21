@@ -50,7 +50,8 @@ The central piece that ties the toolchain together is **open_pdks** — it insta
 - open_pdks: http://opencircuitdesign.com/open_pdks
 - GitHub: https://github.com/RTimothyEdwards/open_pdks
 
-<img width="1920" height="1080" alt="image" src="Screenshot 2026-10-18 040326.png" />
+<img width="1920" height="1080" alt="image" src="sky130_physical_verification_screening/images
+/Screenshot 2026-10-18 040326.png" />
 
 **Installing SKY130 PDK via open_pdks:**
 ```bash
