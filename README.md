@@ -1,8 +1,36 @@
 # Physical Verification using SKY130
 
-Documentation of my work from the **Physical Verification** course using the SkyWater 130nm open-source PDK, as part of the screening for the **Women in VLSI** program by Marvell Technology, SFAL, ESSCI, and VSD.
+## 1. Project Overview
 
-## Table of Contents
+This repository documents my work in the **Physical Verification** lab using the SkyWater 130nm open-source PDK. The goal is to go through the complete design and verification flow of a **CMOS inverter** — from schematic capture and simulation to layout, DRC, and LVS — using entirely open-source EDA tools.
+
+This is part of the screening for the **Women in VLSI** program conducted by Marvell Technology, SFAL, ESSCI, and VSD.
+
+## 2. Objectives
+
+- Gain a working understanding of the **SKY130 PDK** — its layers, devices, and library structure
+- Set up and verify the open-source EDA toolchain (Magic, Xschem, Netgen, ngspice)
+- Design a CMOS inverter schematic and simulate its behavior (pre-layout)
+- Build the inverter layout in Magic following SKY130 design rules
+- Run **DRC** to verify manufacturing rule compliance
+- Run **LVS** to confirm the layout matches the schematic
+- Perform post-layout simulation with extracted parasitics
+
+## 3. Tools and Environment
+
+| Component | Tool |
+|-----------|------|
+| **OS** | Ubuntu / Linux |
+| **Technology** | SkyWater SKY130A (130nm) |
+| **Schematic Editor** | Xschem |
+| **Layout Editor** | Magic |
+| **Simulator** | ngspice |
+| **LVS** | Netgen |
+| **PDK Installer** | open_pdks |
+
+![Toolchain](images/Day1_SK1/opensource_eda_tools.png)
+
+## 4. Course Progress
 
 - [Day 1 - Introduction to SkyWater SKY130](#day-1---introduction-to-skywater-sky130)
   - [SK1 - Introduction to SkyWater PDKs and Open-Source EDA Tools](#sk1---introduction-to-skywater-pdks-and-open-source-eda-tools)
@@ -30,9 +58,9 @@ Documentation of my work from the **Physical Verification** course using the Sky
 
 #### L1 - Introduction to SkyWater PDK
 
-The **SkyWater SKY130** is the first fully open-source PDK, a collaboration between **Google** and **SkyWater Technology Foundry**. The "130" refers to the 130nm feature size (minimum transistor length). However, **the actual minimum-length device in SKY130 is 150nm, not 130nm** — this is due to obscure process reasons.
+The **SkyWater SKY130** is the first fully open-source PDK, born from a collaboration between **Google** and **SkyWater Technology Foundry**. The "130" in SKY130 stands for the 130nm feature size — the minimum transistor length the process targets. However, **the actual minimum-length device in SKY130 is 150nm, not 130nm**, due to process-specific reasons.
 
-A **PDK (Process Design Kit)** is the interface between the chip designer and the foundry. It contains process design rules, device models, digital standard cell libraries, I/O libraries, and primitive device libraries.
+A **PDK (Process Design Kit)** bridges the gap between the chip designer and the foundry. It bundles everything needed to design a chip for a particular process: design rules, device models, standard cell libraries, I/O cells, and primitive device definitions.
 
 | Resource | Link |
 |----------|------|
@@ -44,7 +72,7 @@ A **PDK (Process Design Kit)** is the interface between the chip designer and th
 
 #### L2 - Open-Source EDA Tools
 
-The central repository that ties everything together is **open_pdks** — it is the open-source PDK installer that sets up the SKY130 PDK and configures all the EDA tools to work with it.
+The central piece that ties the toolchain together is **open_pdks** — it installs the SKY130 PDK and configures all supported EDA tools to work with it.
 
 - open_pdks: http://opencircuitdesign.com/open_pdks
 - GitHub: https://github.com/RTimothyEdwards/open_pdks
@@ -58,38 +86,44 @@ make
 sudo make install
 ```
 
-**Tools currently supported by open_pdks:**
+**Primary tools supported by open_pdks:**
 
-- **Magic** (http://opencircuitdesign.com/magic) — Layout editor, DRC engine, parasitic extraction
-- **KLayout** (https://www.klayout.de) — Alternative layout viewer and DRC scripting
-- **OpenLANE** — Automated RTL-to-GDSII flow
-- **Xschem** — Schematic capture and netlist generation
-- **Netgen** — LVS (Layout vs. Schematic) comparator
-- **ngspice** — Open-source SPICE simulator
+| Tool | Role | Link |
+|------|------|------|
+| **Magic** | Layout editor, DRC, parasitic extraction | http://opencircuitdesign.com/magic |
+| **Netgen** | LVS netlist comparison | http://opencircuitdesign.com/netgen |
+| **Xschem** | Schematic capture & netlist generation | https://github.com/StefanSchippers/xschem |
+| **ngspice** | SPICE circuit simulation | http://ngspice.sourceforge.net |
+| **KLayout** | GDS viewer, DRC scripting, XOR | https://www.klayout.de |
+| **OpenLANE** | Automated RTL-to-GDSII flow | https://github.com/The-OpenROAD-Project/OpenLane |
 
-**Alternative tools also supported:**
+**Additional tools:**
 
-- **iverilog** (https://iverilog.icarus.com) — Verilog simulator
-- **qflow** (http://opencircuitdesign.com/qflow) — Digital synthesis flow
-- **IRSIM** (http://opencircuitdesign.com/irsim) — Switch-level simulator
-- **xcircuit** (http://opencircuitdesign.com/xcircuit) — Schematic drawing tool (fun fact: the course slides were drawn with xcircuit!)
+| Tool | Role | Link |
+|------|------|------|
+| **iverilog** | Verilog simulation | https://iverilog.icarus.com |
+| **qflow** | Digital synthesis flow | http://opencircuitdesign.com/qflow |
+| **IRSIM** | Switch-level simulation | http://opencircuitdesign.com/irsim |
+| **xcircuit** | Schematic drawing | http://opencircuitdesign.com/xcircuit |
 
-![Open-Source EDA Tools](images/Day1_SK1/opensource_eda_tools.png)
+Fun fact: The course slides themselves were drawn using xcircuit!
+
+![EDA Toolchain](images/Day1_SK1/eda_toolchain.png)
 
 #### L3 - Understanding SkyWater PDK - Layers
 
-The SKY130 process has the following layer stack:
+The SKY130 process uses a stack of physical layers from the transistor level up to the top metal:
 
-- **diff** — Active diffusion area where transistors are formed
-- **poly** — Polysilicon gate layer. Where poly crosses diffusion, a transistor channel is formed
-- **li1 (Local Interconnect)** — Made of **TiN (Titanium Nitride)**. Used only for very short, device-level connections due to high sheet resistance
-- **met1 to met5** — Five metal routing layers. met1 is thinnest, met5 is thickest (used for power distribution)
+- **diff** — Active diffusion region where transistors are formed
+- **poly** — Polysilicon gate. A transistor channel forms wherever poly crosses diffusion
+- **li1 (Local Interconnect)** — A thin routing layer made of **TiN (Titanium Nitride)**. High sheet resistance — suitable only for very short device-level connections, not for long-distance routing
+- **met1 through met5** — Five metal layers for routing. met1 is the thinnest; met5 is the thickest and primarily used for power distribution
+- **licon** — Contact connecting diffusion/poly to li1
 - **mcon** — Contact connecting li1 to met1
 - **via1 to via4** — Vias connecting adjacent metal layers
-- **licon** — Contact connecting diffusion/poly to li1
-- **nwell / dnwell** — N-well for PMOS. **Deep N-well** provides noise isolation between analog and digital circuits
-- **NPC (Nitride Poly Cut)** — An automatically generated layer. Magic generates it from poly and contact positions; the designer does not draw it manually
-- **RDL (Redistribution Layer)** — Handled separately on the top metal
+- **nwell / dnwell** — N-well houses PMOS devices. **Deep N-well (dnwell)** isolates sensitive analog circuits from digital substrate noise
+- **NPC (Nitride Poly Cut)** — An automatically generated layer; Magic derives it from poly and contact positions. The designer does not draw it manually
+- **RDL (Redistribution Layer)** — Handled separately, sits on the topmost metal
 
 ![SKY130 Layer Stack](images/Day1_SK1/sky130_layers.png)
 
@@ -101,22 +135,22 @@ The SKY130 process has the following layer stack:
 |--------|------|-------------|
 | `sky130_fd_pr__nfet_01v8` | NMOS 1.8V | Standard threshold, general purpose |
 | `sky130_fd_pr__pfet_01v8` | PMOS 1.8V | Standard threshold, general purpose |
-| `sky130_fd_pr__nfet_01v8_lvt` | NMOS LVT | Low threshold, high speed |
-| `sky130_fd_pr__pfet_01v8_hvt` | PMOS HVT | High threshold, low leakage |
-| `sky130_fd_pr__nfet_g5v0d10v5` | NMOS 5V | Thick oxide, I/O |
-| `sky130_fd_pr__pfet_g5v0d10v5` | PMOS 5V | Thick oxide, I/O |
+| `sky130_fd_pr__nfet_01v8_lvt` | NMOS LVT | Low threshold, higher speed, more leakage |
+| `sky130_fd_pr__pfet_01v8_hvt` | PMOS HVT | High threshold, lower leakage, slower |
+| `sky130_fd_pr__nfet_g5v0d10v5` | NMOS 5V | Thick gate oxide, for I/O |
+| `sky130_fd_pr__pfet_g5v0d10v5` | PMOS 5V | Thick gate oxide, for I/O |
 
-**Passive Devices:** Poly resistors, high-res poly resistors, MiM capacitors, varactors, P-N junction diodes.
+**Passive Devices:** Poly resistors, high-resistance poly resistors, MiM capacitors, varactors, P-N junction diodes
 
-**Bipolar Devices:** PNP and NPN BJTs for bandgap references and analog circuits.
+**Bipolar Devices:** PNP and NPN BJTs available for bandgap references and analog circuits
 
-All devices are **parameterized cells (pcells)** — the designer sets W and L, and the layout is generated automatically. SPICE models are BSIM4 with corner models (tt, ff, ss, sf, fs).
+All devices are **parameterized cells (pcells)** — the designer specifies W and L, and the layout is generated automatically. SPICE models use BSIM4 with corner models (tt, ff, ss, sf, fs) for process variation analysis.
 
 ![SKY130 Devices](images/Day1_SK1/sky130_devices.png)
 
 #### L5 - Understanding SkyWater PDK Libraries
 
-**SkyWater SKY130 Libraries:**
+**SKY130 Libraries:**
 
 1. **Digital standard cells:**
    - `sky130_fd_sc_hd` — High-density (most commonly used)
@@ -148,22 +182,22 @@ All devices are **parameterized cells (pcells)** — the designer sets W and L, 
         └── sky130_fd_io/
 ```
 
-**Recommended Project Filesystem Structure:**
+**Project Directory Structure:**
 
 ```
-project_root/                  (e.g., "my_sky130_project")
-├── xschem/                    ← Schematics (copy xschemrc here)
-├── mag/                       ← Layouts (copy .magicrc here)
-├── spice/                     ← SPICE netlists
-├── openlane/                  ← OpenLANE config
-└── verilog/                   ← RTL files
+project_root/
+├── xschem/         ← Schematics (copy xschemrc here)
+├── mag/            ← Layouts (copy .magicrc here)
+├── spice/          ← SPICE netlists
+├── openlane/       ← OpenLANE config
+└── verilog/        ← RTL source files
 ```
 
-Config files are copied from the PDK into the project directory:
+Config files are copied from the PDK installation into the project:
 - `sky130A/libs.tech/magic/sky130A.magicrc` → `mag/.magicrc`
 - `sky130A/libs.tech/xschem/xschemrc` → `xschem/xschemrc`
 
-**For projects with multiple subcells**, two organization styles are possible:
+**For projects with multiple subcells**, two organization styles:
 
 ```
 # Style 1: Subcells inside tool dirs     # Style 2: Tool dirs inside subcells
@@ -180,18 +214,18 @@ project_root/                             project_root/
 
 #### L6 - Open-Source Tools and Flows
 
-Physical verification is part of the **signoff stage** in the RTL-to-GDSII flow:
+The complete open-source RTL-to-GDSII flow passes through these stages:
 
 1. **Synthesis** (Yosys/ABC) → Gate-level netlist
 2. **Floorplan + Placement** (OpenROAD) → Physical placement of cells
 3. **CTS** (TritonCTS) → Clock tree synthesis
 4. **Routing** (FastRoute + TritonRoute) → Metal connections
 5. **Signoff** → **DRC** (Magic) + **LVS** (Netgen)
-6. **Tapeout** → Final GDSII file
+6. **Tapeout** → Final GDSII file sent to the foundry
 
-**DRC** ensures the layout meets all foundry manufacturing rules. **LVS** ensures the layout matches the intended schematic. No foundry accepts a design without clean DRC and LVS.
+**DRC** checks that every shape in the layout satisfies the foundry's manufacturing rules. **LVS** confirms the layout implements exactly the circuit described in the schematic. No foundry accepts a design without both passing clean.
 
-**OpenLANE** automates this entire pipeline. For custom analog design, each tool is used individually — which is what this course focuses on.
+**OpenLANE** automates this entire pipeline end to end. For custom analog design, each tool is used individually — which is the focus of this course.
 
 ![RTL to GDSII Flow](images/Day1_SK1/rtl_to_gdsii_flow.png)
 
@@ -201,7 +235,7 @@ Physical verification is part of the **signoff stage** in the RTL-to-GDSII flow:
 
 #### L1 - Check Tool Installations
 
-The tools are installed in the following order. **open_pdks must be installed last** as it configures technology files based on tool install locations.
+The tools must be installed in the correct order. **open_pdks is installed last** because it configures technology files based on where each tool is installed.
 
 **Magic:**
 ```bash
@@ -250,7 +284,7 @@ make
 sudo make install
 ```
 
-Setting up the working directory and copying config files:
+**Setting up the working directory:**
 
 ```bash
 mkdir inverter_lab && cd inverter_lab
@@ -267,7 +301,7 @@ cd ../netgen
 cp /usr/local/share/pdk/sky130A/libs.tech/netgen/sky130A_setup.tcl .
 ```
 
-Verifying each tool launches correctly:
+**Verifying installations:**
 
 ![Magic Launch](images/Day1_SK2/magic_launch.png)
 
@@ -281,30 +315,32 @@ Verifying each tool launches correctly:
 
 #### L2 - Creating SKY130 Device Layout in Magic
 
-Launched Magic from `mag/` directory with `magic -d XR` and explored the SKY130 standard cell layout by loading an existing inverter cell from the PDK:
+Launched Magic with `magic -d XR` from the `mag/` directory and explored an existing standard cell:
 
 ```tcl
 % gds read /usr/local/share/pdk/sky130A/libs.ref/sky130_fd_sc_hd/gds/sky130_fd_sc_hd.gds
 % load sky130_fd_sc_hd__inv_1
 ```
 
-We can observe the PMOS (inside N-well) and NMOS transistors, power rails (VPWR, VGND) on met1, and local interconnect (li1) used for internal routing.
+The loaded inverter cell shows the PMOS (inside N-well) and NMOS transistors, power rails (VPWR, VGND) on met1, and li1 used for internal routing.
 
 ![Standard Cell in Magic](images/Day1_SK2/magic_std_cell_layout.png)
 
-![Device Layout in Magic](images/Day1_SK2/magic_device_layout.png)
+![Device Layout](images/Day1_SK2/magic_device_layout.png)
 
 ---
 
 #### L3 - Creating Simple Schematic in Xschem
 
-Launched Xschem from the `xschem/` directory and built a CMOS inverter schematic:
+Launched Xschem and built the CMOS inverter schematic by placing components from the open_pdk library:
 
-- Placed `sky130_fd_pr__nfet_01v8` (W=1, L=0.15) and `sky130_fd_pr__pfet_01v8` (W=2, L=0.15)
-- Connected gates together as input **A**
-- Connected drains together as output **Y**
+- `sky130_fd_pr__nfet_01v8` (W=1, L=0.15) and `sky130_fd_pr__pfet_01v8` (W=2, L=0.15)
+- Gates tied together → input **A**
+- Drains tied together → output **Y**
 - PMOS source → VDD, NMOS source → GND
 - Body connections: PMOS body → VDD, NMOS body → GND
+
+Device properties set here in the schematic will automatically reflect in the layout.
 
 ![Inverter Schematic](images/Day1_SK2/xschem_inverter_schematic.png)
 
@@ -312,12 +348,11 @@ Launched Xschem from the `xschem/` directory and built a CMOS inverter schematic
 
 #### L4 - Creating Symbol and Exporting Schematic in Xschem
 
-Created an inverter symbol from the schematic using **Symbol → Make symbol from schematic**.
+Converted the schematic to a reusable symbol using **Symbol → Make symbol from schematic**. This symbol can now be placed in a testbench.
 
-Built a testbench `inverter_tb.sch`:
-- Placed the inverter symbol
-- Added VDD source (1.8V) and input pulse source
-- Added simulation commands:
+![Inverter Symbol](images/Day1_SK2/xschem_inverter_symbol.png)
+
+Built a testbench (`inverter_tb.sch`) with the inverter symbol, VDD supply (1.8V), input pulse source, and simulation commands:
 
 ```spice
 .lib /usr/local/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice tt
@@ -325,54 +360,46 @@ Built a testbench `inverter_tb.sch`:
 .save all
 ```
 
-![Inverter Symbol](images/Day1_SK2/xschem_inverter_symbol.png)
-
 ![Inverter Testbench](images/Day1_SK2/xschem_inverter_testbench.png)
-
----
 
 **Pre-Layout Simulation (ngspice):**
 
-Ran the transient simulation from the testbench. The inverter behaves as expected — output Y is the complement of input A.
+Simulated the testbench in ngspice. The output Y correctly inverts input A.
 
-![Pre-Layout Simulation Result](images/Day1_SK2/ngspice_inverter_simulation.png)
+![Pre-Layout Simulation](images/Day1_SK2/ngspice_inverter_simulation.png)
 
 ---
 
 #### L5 - Importing Schematic to Layout and Inverter Layout Steps
 
-Launched Magic from `mag/` directory with `magic -d XR` and built the inverter layout:
+Exported the schematic netlist and imported it into Magic via **File → Import SPICE**. Then completed the layout:
 
-- Placed NMOS and PMOS devices matching the schematic dimensions
-- Routed using local interconnect (li1) and metal1
+- Placed NMOS and PMOS devices matching the schematic W/L
+- Routed with local interconnect (li1) and metal1
 - Added power rails (VPWR, VGND) on met1
-- Added substrate and well taps for body connections
-- Added port labels: A, Y, VPWR, VGND
+- Added substrate and well taps
+- Labeled all ports: A, Y, VPWR, VGND
 
 ![Inverter Layout](images/Day1_SK2/magic_inverter_layout.png)
 
-![Inverter Layout with Labels](images/Day1_SK2/magic_inverter_layout_labels.png)
+![Layout with Labels](images/Day1_SK2/magic_inverter_layout_labels.png)
 
 ---
 
 #### L6 - Final DRC/LVS Checks
 
-**DRC Check:**
-
-Ran DRC in Magic:
+**DRC:**
 
 ```tcl
 % drc check
 % drc listall why
 ```
 
-All DRC violations were resolved. Layout is DRC clean.
+All violations resolved — layout is DRC clean.
 
 ![DRC Clean](images/Day1_SK2/magic_drc_clean.png)
 
-**Layout Netlist Extraction:**
-
-Extracted the SPICE netlist from the layout for LVS:
+**Netlist Extraction:**
 
 ```tcl
 % extract do local
@@ -381,11 +408,9 @@ Extracted the SPICE netlist from the layout for LVS:
 % ext2spice
 ```
 
-![Extraction Output](images/Day1_SK2/magic_extraction.png)
+![Extraction](images/Day1_SK2/magic_extraction.png)
 
-**LVS with Netgen:**
-
-Compared the schematic netlist (from Xschem) with the layout netlist (from Magic):
+**LVS:**
 
 ```bash
 netgen -batch lvs "../mag/inverter.spice inverter" "../xschem/inverter.spice inverter"
@@ -393,11 +418,11 @@ netgen -batch lvs "../mag/inverter.spice inverter" "../xschem/inverter.spice inv
 
 Result: **Circuits match uniquely.**
 
-![LVS Result - Match](images/Day1_SK2/netgen_lvs_match.png)
+![LVS Match](images/Day1_SK2/netgen_lvs_match.png)
 
 **Post-Layout Simulation:**
 
-After confirming LVS clean, ran a post-layout simulation using the extracted netlist to verify that layout parasitics do not degrade circuit performance.
+Ran simulation using the extracted netlist (with parasitics) to confirm the layout does not degrade performance.
 
 ![Post-Layout Simulation](images/Day1_SK2/postlayout_simulation.png)
 
@@ -411,7 +436,7 @@ After confirming LVS clean, ran a post-layout simulation using the extracted net
 - [Netgen LVS](http://opencircuitdesign.com/netgen/)
 - [Xschem](https://xschem.sourceforge.io/stefan/index.html)
 - [ngspice](http://ngspice.sourceforge.net/)
-- [VSD Physical Verification](https://www.vlsisystemdesign.com/)
+- [VSD - VLSI System Design](https://www.vlsisystemdesign.com/)
 
 ## Acknowledgements
 
