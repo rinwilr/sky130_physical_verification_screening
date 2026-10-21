@@ -48,8 +48,6 @@ The central piece that ties the toolchain together is **open_pdks** — it insta
 - open_pdks: http://opencircuitdesign.com/open_pdks
 - GitHub: https://github.com/RTimothyEdwards/open_pdks
 
-Add image here
-
 **Installing SKY130 PDK via open_pdks:**
 ```bash
 git clone https://github.com/RTimothyEdwards/open_pdks
