@@ -257,70 +257,90 @@ MiM (Metal-insulator-Metal) capacitors are available. Many of the capacitor and 
 
 #### L5 - Understanding SkyWater PDK Libraries
 
-**SKY130 Libraries:**
+The SkyWater Open PDK is distributed with a number of complete IP libraries from the foundry. There are **three types of libraries** immediately available:
 
-1. **Digital standard cells:**
-   - `sky130_fd_sc_hd` — High-density (most commonly used)
-   - `sky130_fd_sc_hdll` — High-density, low-leakage
-   - `sky130_fd_sc_hs` — High-speed
-   - `sky130_fd_sc_ms` — Medium-speed
-   - `sky130_fd_sc_ls` — Low-speed
-   - `sky130_fd_sc_lp` — Low-power
-   - `sky130_fd_sc_hvl` — High-voltage
-   - <img width="682" height="510" alt="image" src="https://github.com/user-attachments/assets/3889b039-b51e-4d41-b0a2-3d08c7df90a0" />
-   - <img width="707" height="562" alt="image" src="https://github.com/user-attachments/assets/312b7b91-cecb-4316-9f0a-2b2c81782347" />
+1. **Digital standard cell libraries**
+2. **I/O cells**
+3. **Primitive devices**
 
-2. **Primitive devices / analog:** `sky130_fd_pr`
-<img width="1188" height="575" alt="image" src="https://github.com/user-attachments/assets/3d5e7eba-1dc8-42f4-a989-d421fcd4c92d" />
+**1. Digital Standard Cell Libraries**
 
-3. **I/O cells:** `sky130_fd_io`
+The digital standard cell libraries come with the layout of every cell in GDS form, along with files used by digital synthesis flows: **Liberty timing files**, **LEF** abstract cell views, **Verilog** behavioral descriptions, and **SPICE/CDL** netlists.
+
+There are **seven flavors** of digital cells covering a range from low power to high speed, high density, high voltage, and low leakage.
+
+<img width="682" height="510" alt="image" src="https://github.com/user-attachments/assets/3889b039-b51e-4d41-b0a2-3d08c7df90a0" />
+<img width="707" height="562" alt="image" src="https://github.com/user-attachments/assets/312b7b91-cecb-4316-9f0a-2b2c81782347" />
+
+**Library naming convention:**
+
+All libraries follow the format: `sky130_<vendor>_<library_type>[_<abbreviation>]`
+
+For example, the most commonly used library — the high-density standard cell set:
+
+`sky130_fd_sc_hd`
+- `fd` = foundry (SkyWater is the vendor)
+- `sc` = standard cell (library type)
+- `hd` = high density (specific library)
+
+**Cell naming convention:**
+
+A double underscore separates the library name from the cell type:
+
+`sky130_fd_sc_hd__nor2_2`
+- `nor2` = two-input NOR gate
+- `_2` = relative drive strength (not a unit — higher number = stronger drive)
+
+The synthesis tools typically determine which drive strength to use. For manual design, a rule of thumb based on fanout can help, or simulation can verify if the drive is sufficient.
+
+**Standard cell placement:** These cells are designed to be placed **in a row**, abutting each other according to their alignment bounding boxes — no overlapping, no gaps between them.
+
+**Documentation note:** Unfortunately, there is almost no documentation on these standard cells. There are also no schematic symbols in the vendor library, but third-party sources (OpenPDK and others) provide symbol libraries to supplement the vendor offering.
+
+**2. I/O Cell Library**
+
 <img width="1201" height="582" alt="image" src="https://github.com/user-attachments/assets/3d82080b-5ef1-44ed-8f17-9f4dfd5c4353" />
 
-4. **3rd-party libraries:** `sky130_ml_xx_hd`, `sky130_sram_macros`
+The I/O library is named `sky130_fd_io`. The SKY130 process has a particularly complicated set of I/O cells — a legacy of Cypress Semiconductor chip designs. They have several unusual features.
+
+A key problem: the power and ground pads contain **entire disconnected blocks** inside them. For example, the VDD I/O pad is not actually connected to the VDD I/O ring by default. An overlay cell is needed to make that connection. The ESD voltage clamp in the same cell is also not connected to any power domain.
+
+Fortunately, the **open_pdks installer** supplements the I/O library with cells that include the missing overlays. These supplementary cells were created by **Efabless** for the Caravel harness chip, and are prefixed with `sky130_ef_io` (where `ef` = Efabless).
+
+For most users, the **Caravel harness chip** is the best reference for understanding how to wire up a pad frame with these I/O cells.
+
+**3. Primitive Device Library**
+
+<img width="1188" height="575" alt="image" src="https://github.com/user-attachments/assets/3d5e7eba-1dc8-42f4-a989-d421fcd4c92d" />
+
+The primitive device library is named `sky130_fd_pr` (`pr` = primitives). It contains devices with vendor-approved layouts including:
+
+- RF-optimized transistor layouts (carefully controlled parasitics)
+- Bipolar transistors
+- Varactors
+- High-voltage drain-extended devices
+- ESD protection devices
+- Parallel-plate capacitors of various shapes, sizes, and metal layers
+
+**Note on capacitors:** MiM capacitors provide much higher capacitance per unit area without consuming routing space, so they are generally preferred over parallel-plate caps.
+
+**4. SRAM and NVRAM Libraries (Not Yet Distributed)**
+
 <img width="1197" height="571" alt="image" src="https://github.com/user-attachments/assets/01691ddb-1d0f-4ad8-b9f0-db914e8f5978" />
 
-**PDK Installed Filesystem Structure:**
+- **SRAM** — Handed over to the **OpenRAM** project. The foundry provided only the core SRAM cell layout, so OpenRAM is creating the additional decoding and driver circuitry
+- **NVRAM** — Even more limited. Only the design rules for the floating-gate SONOS transistor are available. A full NVRAM library would need high-voltage charge pumps and program/erase control circuits — expected to take considerably longer
 
-```
-/usr/share/pdk/
-└── sky130A/
-    ├── libs.tech/          ← Technology files for each tool
-    │   ├── magic/
-    │   ├── openlane/
-    │   └── xschem/
-    └── libs.ref/           ← Reference libraries
-        ├── sky130_fd_sc_hd/
-        ├── sky130_fd_pr/
-        └── sky130_fd_io/
-```
+**Summary of SKY130 Libraries:**
 
-**Project Directory Structure:**
-
-```
-project_root/
-├── xschem/         ← Schematics (copy xschemrc here)
-├── mag/            ← Layouts (copy .magicrc here)
-├── spice/          ← SPICE netlists
-├── openlane/       ← OpenLANE config
-└── verilog/        ← RTL source files
-```
-
-Config files are copied from the PDK installation into the project:
-- `sky130A/libs.tech/magic/sky130A.magicrc` → `mag/.magicrc`
-- `sky130A/libs.tech/xschem/xschemrc` → `xschem/xschemrc`
-
-**For projects with multiple subcells**, two organization styles:
-
-```
-# Style 1: Subcells inside tool dirs     # Style 2: Tool dirs inside subcells
-project_root/                             project_root/
-├── mag/                                  ├── subcell_A/
-│   ├── subcell_A/                        │   ├── mag/
-│   └── subcell_B/                        │   └── xschem/
-└── xschem/                               └── subcell_B/
-    ├── subcell_A/                            ├── mag/
-    └── subcell_B/                            └── xschem/
-```
+| Library | Description |
+|---------|-------------|
+| `sky130_fd_sc_hd` | High-density digital standard cells |
+| `sky130_fd_io` | I/O pad cells |
+| `sky130_ef_io` | Efabless supplementary I/O cells (overlays) |
+| `sky130_fd_pr` | Primitive devices (transistors, R, C, BJT) |
+| SRAM | Under development by OpenRAM project |
+| NVRAM | Design rules only, full library not yet available |
 
 ![SKY130 Libraries](images/Day1_SK1/sky130_libraries.png)
 
