@@ -567,19 +567,3 @@ Ran simulation using the extracted netlist (with parasitics) to confirm the layo
 
 ---
 
-## References
-
-- [SkyWater SKY130 PDK](https://github.com/google/skywater-pdk)
-- [Open_PDKs](https://github.com/RTimothyEdwards/open_pdks)
-- [Magic VLSI](http://opencircuitdesign.com/magic/)
-- [Netgen LVS](http://opencircuitdesign.com/netgen/)
-- [Xschem](https://xschem.sourceforge.io/stefan/index.html)
-- [ngspice](http://ngspice.sourceforge.net/)
-- [VSD - VLSI System Design](https://www.vlsisystemdesign.com/)
-
-## Acknowledgements
-
-- **Tim Edwards** — Maintainer of Magic, Netgen, and open_pdks
-- **Kunal Ghosh** — Co-founder, VSD
-- **Marvell Technology, SFAL, ESSCI** — Women in VLSI initiative
-- **SkyWater Technology & Google** — Open-source PDK program
