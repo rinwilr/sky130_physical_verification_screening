@@ -40,8 +40,6 @@ A **PDK (Process Design Kit)** bridges the gap between the chip designer and the
 | PDK Library & Files | https://github.com/google/skywater-pdk |
 | Community (Slack) | https://join.skywater.tools |
 
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/f5693ae1-85bc-41a5-9c67-a383b078ca1f" />
-
 
 #### L2 - Open-Source EDA Tools
 
