@@ -1,36 +1,8 @@
 # Physical Verification using SKY130
 
-## 1. Project Overview
+Documentation of my work from the **Physical Verification** course using the SkyWater 130nm open-source PDK, as part of the screening for the **Women in VLSI** program by Marvell Technology, SFAL, ESSCI, and VSD.
 
-This repository documents my work in the **Physical Verification** lab using the SkyWater 130nm open-source PDK. The goal is to go through the complete design and verification flow of a **CMOS inverter** — from schematic capture and simulation to layout, DRC, and LVS — using entirely open-source EDA tools.
-
-This is part of the screening for the **Women in VLSI** program conducted by Marvell Technology, SFAL, ESSCI, and VSD.
-
-## 2. Objectives
-
-- Gain a working understanding of the **SKY130 PDK** — its layers, devices, and library structure
-- Set up and verify the open-source EDA toolchain (Magic, Xschem, Netgen, ngspice)
-- Design a CMOS inverter schematic and simulate its behavior (pre-layout)
-- Build the inverter layout in Magic following SKY130 design rules
-- Run **DRC** to verify manufacturing rule compliance
-- Run **LVS** to confirm the layout matches the schematic
-- Perform post-layout simulation with extracted parasitics
-
-## 3. Tools and Environment
-
-| Component | Tool |
-|-----------|------|
-| **OS** | Ubuntu / Linux |
-| **Technology** | SkyWater SKY130A (130nm) |
-| **Schematic Editor** | Xschem |
-| **Layout Editor** | Magic |
-| **Simulator** | ngspice |
-| **LVS** | Netgen |
-| **PDK Installer** | open_pdks |
-
-![Toolchain](images/Day1_SK1/opensource_eda_tools.png)
-
-## 4. Course Progress
+## Table of Contents
 
 - [Day 1 - Introduction to SkyWater SKY130](#day-1---introduction-to-skywater-sky130)
   - [SK1 - Introduction to SkyWater PDKs and Open-Source EDA Tools](#sk1---introduction-to-skywater-pdks-and-open-source-eda-tools)
