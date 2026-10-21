@@ -199,7 +199,11 @@ The metal layers are the **backend layers**. Everything below them is the **fron
 
 #### L4 - Understanding SkyWater PDK - Devices
 
+Understanding the devices is critical for physical verification, since most of PV is concerned with correctly identifying layers and extracting all devices on a chip.
+
 **MOSFETs:**
+
+The SKY130 process offers both thin-oxide (1.8V) and thick-oxide (5V) MOSFETs:
 
 | Device | Type | Description |
 |--------|------|-------------|
@@ -210,11 +214,37 @@ The metal layers are the **backend layers**. Everything below them is the **fron
 | `sky130_fd_pr__nfet_g5v0d10v5` | NMOS 5V | Thick gate oxide, for I/O |
 | `sky130_fd_pr__pfet_g5v0d10v5` | PMOS 5V | Thick gate oxide, for I/O |
 
-**Passive Devices:** Poly resistors, high-resistance poly resistors, MiM capacitors, varactors, P-N junction diodes
+Like most larger feature-size processes that are well-suited for analog and mixed-signal design, the SKY130 process has numerous device offerings beyond MOSFETs.
 
-**Bipolar Devices:** PNP and NPN BJTs available for bandgap references and analog circuits
+**Bipolar Devices:**
 
-All devices are **parameterized cells (pcells)** — the designer specifies W and L, and the layout is generated automatically. SPICE models use BSIM4 with corner models (tt, ff, ss, sf, fs) for process variation analysis.
+The best bipolar devices with high enough gain to be useful are **vertical bipolars** that make use of the PN junctions between diffusion and well layers.
+
+- **NPN transistors** — Thanks to the deep N-well layer, properly isolated NPN transistors can be built with: diffusion as the emitter, P-well as the base, and deep N-well as the collector
+- **PNP transistors** — More limited in use. The only configuration available has the collector tied to ground (substrate), so PNP devices cannot have an arbitrary collector voltage
+
+**Resistors:**
+
+The best resistors are made with **doped polysilicon**. There are two types in SKY130:
+
+| Resistor | Sheet Resistance | Notes |
+|----------|-----------------|-------|
+| P+ doped poly | ~1 kΩ/sq | Standard poly resistor |
+| P- doped poly (high-res) | ~2 kΩ/sq | High-resistance poly resistor |
+
+**Diffusion resistors** are also available but since they have a PN junction underneath, the circuit design must keep that junction firmly reverse-biased. The highest resistance per square comes from P-well resistors, but due to the large size and spacing required for P-well, they are rarely used when the high-resistance poly option is available.
+
+**Precision resistors** come in a **discrete set of widths** (typically 5), corresponding to layouts that fit around an integer number of contacts.
+
+**Capacitors:**
+
+MiM (Metal-insulator-Metal) capacitors are available. Many of the capacitor and other specialized devices have restricted layouts with fixed approved dimensions — these are not freely parameterized but come as specific GDS cells. They are identified by dedicated mask layers.
+
+**General notes on devices:**
+
+- All standard devices are **parameterized cells (pcells)** — the designer specifies W and L and the layout is generated automatically
+- Some devices have a **discrete set of approved sizes** rather than continuous parameterization
+- SPICE models use BSIM4 with corner models (tt, ff, ss, sf, fs) for process variation analysis
 
 ![SKY130 Devices](images/Day1_SK1/sky130_devices.png)
 <img width="681" height="502" alt="image" src="https://github.com/user-attachments/assets/a92c60af-7c0c-47eb-b2f2-219a7bbc4eae" />
